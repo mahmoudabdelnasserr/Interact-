@@ -57,7 +57,7 @@ function Navbar() {
  
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'white' }} elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
       
@@ -74,7 +74,7 @@ function Navbar() {
               textDecoration: 'none',
             }}
           >
-            {token ? <Link href={'/'}>INTERACT</Link> : 'INTERACT'}
+            {token ? <Link style={{color: 'black' }} href={'/'}>INTERACT</Link> : <p style={{color: 'black' }}>INTERACT</p>}
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -106,13 +106,13 @@ function Navbar() {
             >
               
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}><Link href={'/register'}>Register</Link></Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'black' }}><Link href={'/register'}>Register</Link></Typography>
                 </MenuItem>
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}><Link href={'/login'}>Login</Link></Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'black'  }}><Link href={'/login'}>Login</Link></Typography>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
-                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'black'  }}>Logout</Typography>
                 </MenuItem>
              
             </Menu>
@@ -132,7 +132,7 @@ function Navbar() {
               textDecoration: 'none',
             }}
           >
-             {token ? <Link href={'/'}>INTERACT</Link> : 'INTERACT'}
+             {token ? <Link style={{color: 'black' }} href={'/'}>INTERACT</Link> : <p style={{color: 'black' }}>INTERACT</p>}
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           {token && 
@@ -144,14 +144,14 @@ function Navbar() {
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link href={'/createpost'}>Add Post</Link>
+                <Link style={{color: 'black' }} href={'/createpost'}>Add Post</Link>
               </Button>
               <Button
                 
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link href={'/profile'}>Profile</Link>
+                <Link style={{color: 'black' }} href={'/profile'}>Profile</Link>
               </Button>
              </Box>
              
@@ -162,7 +162,7 @@ function Navbar() {
             {token ? <Button
                 
                 onClick={handleLogout}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'red', display: 'block' }}
               >
                 Logout
               </Button> : <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}> 
@@ -171,15 +171,17 @@ function Navbar() {
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link href={'/login'}>Login</Link>
+                <Link style={{color: 'black' }} href={'/login'}>Login</Link>
               </Button>
               <Button
                 
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link href={'/register'}>Register</Link>
-              </Button> 
+                <Link style={{color: 'black' }} href={'/register'}>Register</Link>
+              </Button>
+              
+             
             </Box> }
            
               
@@ -209,11 +211,11 @@ function Navbar() {
             >
              
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}> <Link href={'/register'}>Register</Link></Typography>
+                  <Typography sx={{ textAlign: 'center' }}> <Link style={{color: 'black' }} href={'/register'}>Register</Link></Typography>
                 </MenuItem><MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}> <Link href={'/login'}>Login</Link></Typography>
+                  <Typography sx={{ textAlign: 'center' }}> <Link style={{color: 'black' }} href={'/login'}>Login</Link></Typography>
                 </MenuItem><MenuItem onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}> Logout</Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'black'  }}> Logout</Typography>
                 </MenuItem>
               
             </Menu>

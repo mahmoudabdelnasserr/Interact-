@@ -1,139 +1,117 @@
-'use client'
+"use client";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ChatIcon from "@mui/icons-material/Chat";
+import ShareIcon from "@mui/icons-material/Share";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Comment, Post } from "../interfaces";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, TextField } from "@mui/material";
+import Menu from "../menu/menu";
 
-interface ExpandMoreProps extends IconButtonProps {
+interface ExpandMoreProps {
   expand: boolean;
 }
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme }) => ({
+const ExpandMore = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== "expand",
+})<ExpandMoreProps>(({ theme, expand }) => ({
   marginLeft: "auto",
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
   }),
-  variants: [
-    {
-      props: ({ expand }) => !expand,
-      style: {
-        transform: "rotate(0deg)",
-      },
-    },
-    {
-      props: ({ expand }) => !!expand,
-      style: {
-        transform: "rotate(180deg)",
-      },
-    },
-  ],
+  transform: expand ? "rotate(180deg)" : "rotate(0deg)",
 }));
 
-export default function PostDetails({
-  post,
-  isComments = false,
-}: {
+interface PostDetailsProps {
   post: Post;
-  isComments?: Boolean;
-}) {
-  const [comments, setComments] = React.useState([]);
+  isComments?: boolean;
+}
+
+const PostDetails: React.FC<PostDetailsProps> = ({ post, isComments = false }) => {
+  const [comments, setComments] = React.useState<Comment[]>(post.comments || []);
   const [expanded, setExpanded] = React.useState(false);
+  const [editingComment, setEditingComment] = React.useState<string | null>(null);
+  const [editContent, setEditContent] = React.useState<string>("");
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  async function handleAddComment(e:React.FormEvent) {
+  async function handleAddComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    let form = e.target as HTMLFormElement;
-
-    let values = {
+    const form = e.currentTarget;
+    const values = {
       content: form.comment.value,
       post: post.id,
-    
-    }
-    let response = await fetch(`https://linked-posts.routemisr.com/comments`,{
-      method: 'POST',
+    };
+    const response = await fetch(`https://linked-posts.routemisr.com/comments`, {
+      method: "POST",
       body: JSON.stringify(values),
       headers: {
-        'token': `${localStorage.getItem('token')}`,
-        'Content-Type': 'application/json'
-        
-      }
+        token: `${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
     });
-
-    let data = await response.json();
-    console.log(data);
-    setComments(data.comments);
-    form.comment.content = null;
-    
+    const data = await response.json();
+    setComments(data.comments || []);
+    form.reset();
   }
 
+  async function handleEditComment(id: string) {
+    const response = await fetch(`https://linked-posts.routemisr.com/comments/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ content: editContent }),
+      headers: {
+        token: `${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+  
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment._id === id ? { ...comment, content: editContent } : comment
+      )
+    );
+  
+    setEditingComment(null);
+  }
+  
   return (
     <Card sx={{ m: 3 }}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            <Image
-              src={post.user.photo}
-              alt={post.user.name}
-              style={{ width: "100%", height: "auto" }}
-              width={60}
-              height={60}
-            />
+          <Avatar sx={{ bgcolor: red[500] }} aria-label="user-avatar">
+            <Image src={post.user.photo} alt={post.user.name} width={60} height={60} />
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
+        action={<IconButton aria-label="settings"><MoreVertIcon /></IconButton>}
         title={post.user.name}
         subheader={post.createdAt.split("T", 1)}
       />
       <CardContent>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          {post.body}
-        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>{post.body}</Typography>
       </CardContent>
       {post.image && (
-        <Image
-          src={post.image}
-          alt={`${post.body}`}
-          width={400}
-          height={400}
-          style={{ width: "100%", objectFit: "contain" }}
-        />
+        <Image src={post.image} alt={post.body} width={400} height={400} style={{ width: "100%" }} />
       )}
-
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton aria-label="like">
           <ThumbUpIcon sx={{ color: "#7E5CAD" }} />
         </IconButton>
-        <IconButton aria-label="share"></IconButton>
         <ExpandMore
-          sx={{ color: "grey" }}
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
@@ -144,128 +122,43 @@ export default function PostDetails({
         <ShareIcon sx={{ color: "grey" }} />
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {post.comments.length > 0 && !isComments ? (
-          <CardContent sx={{ backgroundColor: "#eee" }}>
-            <CardHeader
-              avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                  {!post.comments[0].commentCreator.photo.includes(
-                    "undefined"
-                  ) ? (
-                    <Image
-                      src={post.comments[0].commentCreator.photo}
-                      alt={post.comments[0].commentCreator.name}
-                      style={{ width: "100%", height: "auto" }}
-                      width={60}
-                      height={60}
-                    />
-                  ) : (
-                    post.comments[0].commentCreator.name.slice(0, 1)
-                  )}
-                </Avatar>
-              }
-              action={
-                <IconButton aria-label="settings">
-                  <MoreVertIcon />
-                </IconButton>
-              }
-              title={post.comments[0].commentCreator.name}
-              subheader={post.comments[0].createdAt.split("T", 1)}
-            />
-            <Typography sx={{ marginBottom: 2, width: "95%", mx: "auto" }}>
-              {post.comments[0].content}
-            </Typography>
-            <Link
-              href={`singlepost/${post.id}`}
-              style={{ textAlign: "right", display: "block", width: "100%" }}
-            >
-              View all comments
-            </Link>
-          </CardContent>
-        ) : (
-          post.comments.length > comments.length &&
-          isComments ?
-          
-          post.comments.map((comment: Comment) => (
-            <CardContent
-           
-              sx={{
-                backgroundColor: "#eee",
-                marginBottom: "8px",
-                borderRadius: "10px",
-              }}
-            >
+        <CardContent sx={{ backgroundColor: "#eee" }}>
+          {comments?.map((comment) => (
+            <CardContent key={comment._id} sx={{ backgroundColor: "#eee", mb: 2, borderBottom: 1 ,borderColor: '#c1c1c1' }}>
               <CardHeader
-               
                 avatar={
-                  <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                    {comment.commentCreator.photo.includes("undefined") ? (
-                      <Image
-                        src={comment.commentCreator.photo}
-                        alt={comment.commentCreator.name}
-                        style={{ width: "100%", height: "auto" }}
-                        width={60}
-                        height={60}
-                      />
-                    ) : (
-                      comment.commentCreator.name.slice(0, 1)
-                    )}
+                  <Avatar sx={{ bgcolor: red[500] }}>
+                    <Image src={comment.commentCreator.photo} alt={comment.commentCreator.name} width={60} height={60} />
                   </Avatar>
-                }
-                action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
                 }
                 title={comment.commentCreator.name}
                 subheader={comment.createdAt.split("T", 1)}
+                action={<Menu />}
               />
-              <Typography sx={{ marginBottom: 2, width: "95%", mx: "auto" }}>
-                {comment.content}
-              </Typography>
-            </CardContent>)) :  comments.map((comment: Comment) => (
-            <CardContent key={comment._id}
-              sx={{
-                backgroundColor: "#eee",
-                marginBottom: "8px",
-                borderRadius: "10px",
-              }}
-            >
-              <CardHeader
-                key={comment._id}
-                avatar={
-                  <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                    {comment.commentCreator.photo.includes("undefined") ? (
-                      <Image
-                        src={comment.commentCreator.photo}
-                        alt={comment.commentCreator.name}
-                        style={{ width: "100%", height: "auto" }}
-                        width={60}
-                        height={60}
-                      />
-                    ) : (
-                      comment.commentCreator.name.slice(0, 1)
-                    )}
-                  </Avatar>
-                }
-                action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                title={comment.commentCreator.name}
-                subheader={comment.createdAt.split("T", 1)}
-              />
-              <Typography sx={{ marginBottom: 2, width: "95%", mx: "auto" }}>
-                {comment.content}
-              </Typography>
-            </CardContent>))
-        )}
-      <form onSubmit={(e) => handleAddComment(e)} style={{display:'flex', justifyContent: 'space-between', padding: '1rem', gap: '1rem'}}>
-      <TextField name="comment" id="comment" label="comment" type="text" variant="outlined" sx={{flexGrow: 1}}/>
-      <Button type="submit" variant="contained">Add Comment</Button>
-      </form>
+              {editingComment === comment._id ? (
+                <TextField
+                  fullWidth
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                />
+              ) : (
+                <Typography>{comment.content}</Typography>
+              )}
+              {editingComment === comment._id ? (
+                <Button onClick={() => handleEditComment(comment._id)}>Save</Button>
+              ) : (
+                <Button onClick={() => { setEditingComment(comment._id); setEditContent(comment.content); }}>Edit</Button>
+              )}
+            </CardContent>
+          ))}
+        </CardContent>
+        <form onSubmit={handleAddComment} style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
+          <TextField name="comment" label="Add a comment" variant="outlined" fullWidth />
+          <Button type="submit" variant="contained">Add</Button>
+        </form>
       </Collapse>
     </Card>
   );
-}
+};
+
+export default PostDetails;

@@ -1,0 +1,35 @@
+.main{
+    position: relative;
+    display: inline-block;
+    width: auto;
+}
+.menuButton{
+    border: none;
+}
+
+.actionsCont{
+    position: absolute;
+    right: 0;
+    margin: 8px 8px;
+    width: 150px;
+    background-color: white;
+    border-radius: 10px;
+    justify-content: center;
+    
+   
+
+}
+
+.actionsCont ul {
+    padding: 20px 20px;
+    text-align: left;
+    
+}
+.actionsCont li {
+    padding: 0 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+    list-style-type: none;
+}
+

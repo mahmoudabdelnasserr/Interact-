@@ -41,4 +41,13 @@ export interface Root {
     name: string
     photo: string
   }
+  export interface UserReister {
+    name: string,
+    email: string,
+    password: string,
+    rePassword: string,
+    dateOfBirth: string
+    gender: string,
+
+  }
   

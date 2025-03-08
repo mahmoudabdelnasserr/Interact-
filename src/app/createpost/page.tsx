@@ -13,7 +13,10 @@ export default function CreatePost() {
  
     let formData = new FormData();
     formData.append('body', form.body.value);
-    formData.append('image', form.image.files[0]);
+    
+    if (form.image.files.length > 0) {
+      formData.append("image", form.image.files[0]);
+    }
     const response = await fetch('https://linked-posts.routemisr.com/posts',{
       method: 'POST',
       body: formData,
@@ -35,7 +38,7 @@ export default function CreatePost() {
   <h2>Add Post</h2>
        <form onSubmit={(e) => handleAddPost(e)}  style={{display: 'flex', flexDirection: 'column', gap: '1rem', padding: '.5rem'}}>
         <TextField name='body' id="body" label="body" type='text' variant="outlined" />
-        <TextField name='image'  id="image" type= 'file' variant="outlined" />
+        <TextField name='image'  id="image" type= 'file' variant="outlined"/>
         <Button type='submit' variant='contained' sx={{height: '50px'}}>Add Post</Button>
     </form>
   

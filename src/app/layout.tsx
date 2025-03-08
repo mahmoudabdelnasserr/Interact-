@@ -9,6 +9,9 @@ import { Box } from "@mui/material";
 import { Provider } from "react-redux";
 import { store } from "./_redux/store";
 import { Toaster } from "react-hot-toast";
+import { usePathname } from "next/navigation";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,9 +26,10 @@ const poppins = Poppins({
 // };
 
 export default function RootLayout({children} : {children : ReactNode}) {
+  const path = usePathname()
   return (
     <html lang="en">
-      <body style={{fontFamily: poppins.style.fontFamily}}>
+      <body style={{fontFamily: poppins.style.fontFamily}} className={path === '/register' || path === '/login' ? 'image' : ''}>
       <Provider store={store}>
       <AppRouterCacheProvider>
         <Navbar />

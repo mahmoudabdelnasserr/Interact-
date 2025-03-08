@@ -1,6 +1,6 @@
 "use client"
 import { Email } from '@mui/icons-material'
-import { Box, Button, CircularProgress, Paper, TextField } from '@mui/material'
+import { Box, Button, CircularProgress, Paper, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -46,9 +46,10 @@ export default function Login() {
   return <>
     
     <Box sx={{textAlign: 'center'}}>
-    <h2 >Login</h2>
+    
     </Box>
     <Paper elevation={3} sx={{p:2, m:3}}>
+    <Typography sx={{margin: '1rem',  fontSize: '32px'}}>Sign in to your account</Typography>
         <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1rem', padding: '.5rem'}}>
         <TextField onChange= {handleChange} value={values.email} id="email" label="Email" type='email' variant="outlined" />
         <TextField onChange= {handleChange} value={values.password}  id="password" label="Password" type= 'password' variant="outlined" />
