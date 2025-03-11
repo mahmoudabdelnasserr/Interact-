@@ -1,11 +1,12 @@
 "use client"
 import { Button, TextField } from '@mui/material'
 import { useRouter } from 'next/navigation';
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useState } from 'react'
 import toast from 'react-hot-toast';
 
 
 export default function CreatePost() {
+  const [isLoading, setIsLoading] = useState(false);
   let router = useRouter();
   async function handleAddPost(e: FormEvent){
     let form = e.target as HTMLFormElement
@@ -17,6 +18,7 @@ export default function CreatePost() {
     if (form.image.files.length > 0) {
       formData.append("image", form.image.files[0]);
     }
+    setIsLoading(true);
     const response = await fetch('https://linked-posts.routemisr.com/posts',{
       method: 'POST',
       body: formData,
@@ -24,7 +26,7 @@ export default function CreatePost() {
         'token': localStorage.getItem('token') || ''
       }
     });
-
+    
     let data = await response.json();
     toast.success(data.message,{
       position: 'top-right'
@@ -39,7 +41,7 @@ export default function CreatePost() {
        <form onSubmit={(e) => handleAddPost(e)}  style={{display: 'flex', flexDirection: 'column', gap: '1rem', padding: '.5rem'}}>
         <TextField name='body' id="body" label="body" type='text' variant="outlined" />
         <TextField name='image'  id="image" type= 'file' variant="outlined"/>
-        <Button type='submit' variant='contained' sx={{height: '50px'}}>Add Post</Button>
+        <Button disabled= {isLoading} type='submit' variant='contained' sx={{height: '50px'}}>Add Post</Button>
     </form>
   
   </>

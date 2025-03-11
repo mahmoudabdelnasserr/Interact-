@@ -17,8 +17,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Comment, Post } from "../interfaces";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import Menu from "../menu/menu";
+import { useDispatch, useSelector } from "react-redux";
+import { State, storeDispatch } from "../_redux/store";
+import { deletePost } from "../_redux/postsSlice";
+import { jwtDecode } from "jwt-decode";
 
 interface ExpandMoreProps {
   expand: boolean;
@@ -44,6 +48,10 @@ const PostDetails: React.FC<PostDetailsProps> = ({ post, isComments = false }) =
   const [expanded, setExpanded] = React.useState(false);
   const [editingComment, setEditingComment] = React.useState<string | null>(null);
   const [editContent, setEditContent] = React.useState<string>("");
+  const dispatch = useDispatch<storeDispatch>();
+  let {user} = jwtDecode(`${localStorage.getItem('token')}`);
+  const { posts } = useSelector((state: State) => state.postsReducer);
+  
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -94,11 +102,14 @@ const PostDetails: React.FC<PostDetailsProps> = ({ post, isComments = false }) =
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="user-avatar">
-            <Image src={post.user.photo} alt={post.user.name} width={60} height={60} />
+            <Image src={post.user.photo} alt={post.user.name} fill />
           </Avatar>
         }
-        action={<IconButton aria-label="settings"><MoreVertIcon /></IconButton>}
-        title={post.user.name}
+        action={user === post.user._id ? (
+          <Typography onClick={() => dispatch(deletePost(post._id))} sx={{ color: 'red', cursor: 'pointer' }}>
+            Delete
+          </Typography>
+        ) : null}        title={post.user.name}
         subheader={post.createdAt.split("T", 1)}
       />
       <CardContent>
